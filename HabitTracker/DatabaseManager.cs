@@ -5,13 +5,13 @@ namespace HabitTracker;
 
 public class DatabaseManager
 {
-    readonly private string FileName;
+    // readonly private string FileName;
     readonly private string ConnectionString;
 
     public DatabaseManager(string fileName)
     {
-        FileName = fileName;
-        ConnectionString = $"Data source={FileName}";
+        // FileName = fileName;
+        ConnectionString = $"Data source={fileName}";
         CreateDatabaseIfNotExist();
     }
 
@@ -31,6 +31,47 @@ public class DatabaseManager
             try
             {
                 command.ExecuteNonQuery();
+            }
+            catch (SqliteException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+    }
+
+    public void ViewRecords()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT * FROM drinking_water";
+
+            try
+            {
+                connection.Open();
+                var reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    Console.WriteLine("\n\tId\tDate\t\tQuantity");
+                    while (reader.Read())
+                    {
+                        Console.WriteLine($"\t{reader[0]}\t{reader[1]}\t{reader[2]}");
+                    }
+                    reader.Close();
+
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.WriteLine("\nThere are no records.\n");
+                }
+                connection.Close();
+                User.PressEnter();
             }
             catch (SqliteException e)
             {

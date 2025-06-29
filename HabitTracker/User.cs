@@ -1,6 +1,4 @@
-using System;
 using System.Globalization;
-using System.IO.Pipelines;
 
 namespace HabitTracker;
 
@@ -38,8 +36,9 @@ public class User
                     exitApp = true;
                     Environment.Exit(0);
                     break;
-                // case "1":
-                //     break;
+                case "1":
+                    DB.ViewRecords();
+                    break;
                 case "2":
                     DB.Insert();
                     break;
