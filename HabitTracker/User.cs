@@ -45,8 +45,9 @@ public class User
                 case "3":
                     DB.Delete();
                     break;
-                // case "4":
-                //     break;
+                case "4":
+                    DB.Update();
+                    break;
                 default:
                     Console.WriteLine("\nInvalid input.\n");
                     PressEnter();

@@ -1,4 +1,3 @@
-using System.Data;
 using Microsoft.Data.Sqlite;
 
 namespace HabitTracker;
@@ -33,10 +32,6 @@ public class DatabaseManager
             catch (SqliteException e)
             {
                 Console.WriteLine($"Database error: {e.Message}");
-            }
-            finally
-            {
-                connection.Close();
             }
         }
     }
@@ -76,10 +71,6 @@ public class DatabaseManager
             {
                 Console.WriteLine($"Database error: {e.Message}");
             }
-            finally
-            {
-                connection.Close();
-            }
         }
     }
 
@@ -105,10 +96,6 @@ public class DatabaseManager
             catch (SqliteException e)
             {
                 Console.WriteLine($"Database error: {e.Message}");
-            }
-            finally
-            {
-                connection.Close();
             }
         }
     }
@@ -186,13 +173,6 @@ public class DatabaseManager
             {
                 Console.WriteLine($"An error occurred: {e.Message}");
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
         }
 
         User.PressEnter();
@@ -209,6 +189,7 @@ public class DatabaseManager
 
             try
             {
+                connection.Open();
                 var reader = command.ExecuteReader();
 
                 if (reader.HasRows)
@@ -232,6 +213,7 @@ public class DatabaseManager
                     {
                         if (validIds.Contains(selectedId))
                         {
+                            // Gives the user an option on what they would like to update
                             Console.WriteLine("\nWhat would you like to update");
                             Console.WriteLine("Type D for the date.");
                             Console.WriteLine("Type Q for the quantity.");
@@ -245,6 +227,7 @@ public class DatabaseManager
                             switch (input.ToUpper())
                             {
                                 case "D":
+                                    // Updates only the date
                                     newDate = User.GetDate();
 
                                     var newDateCmd = connection.CreateCommand();
@@ -257,16 +240,30 @@ public class DatabaseManager
                                     Console.WriteLine($"\nThe date {newDate} with id {selectedId} has been updated successfully.\n");
                                     break;
                                 case "Q":
+                                    // Updates only the quantity
                                     newQuantity = User.GetQuantity();
+
                                     var newQuantityCmd = connection.CreateCommand();
                                     newQuantityCmd.CommandText = $@"UPDATE drinking_water
                                         SET Quantity = {newQuantity}
                                         WHERE Id = @id
                                     ";
+
                                     Console.WriteLine($"\nThe quantity of {newQuantity} with id {selectedId} has been updated sucessfully.\n");
                                     break;
                                 case "B":
+                                    // Updates both date and quantity
+                                    newDate = User.GetDate();
+                                    newQuantity = User.GetQuantity();
 
+                                    var newUpdateCmd = connection.CreateCommand();
+                                    newUpdateCmd.CommandText = $@"UPDATE drinking_water
+                                        SET 'Date' = {newDate},
+                                        SET Quantity = {newQuantity}
+                                        WHERE Id = @id
+                                    ";
+
+                                    Console.WriteLine($"\nThe date {newDate} and quantity of {newQuantity} with id {selectedId} has been updated successfully.\n");
                                     break;
                                 default:
                                     Console.WriteLine("Invalid input. Please select the correct option.\n");
@@ -293,8 +290,8 @@ public class DatabaseManager
             {
                 Console.WriteLine(e.Message);
             }
-
-            User.PressEnter();
         }
+
+        User.PressEnter();
     }
 }
