@@ -1,4 +1,4 @@
-using System;
+using System.Data;
 using Microsoft.Data.Sqlite;
 
 namespace HabitTracker;
@@ -19,18 +19,54 @@ public class DatabaseManager
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            using (var command = connection.CreateCommand())
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"CREATE TABLE IF NOT EXISTS drinking_water (
+                Id INTEGER PRIMARY KEY,
+                Date TEXT,
+                Quantity INTEGER
+            )";
+
+            try
             {
-                connection.Open();
-
-                command.CommandText = @"CREATE TABLE IF NOT EXISTS drinking_water (
-                    Id INTEGER PRIMARY KEY,
-                    Date TEXT,
-                    Quantity INTEGER
-                )";
-
                 command.ExecuteNonQuery();
+            }
+            catch (SqliteException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+    }
 
+    public void Insert()
+    {
+        string date = User.GetDate();
+        int quantity = User.GetQuantity();
+
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            connection.Open();
+
+            var command = connection.CreateCommand();
+
+            command.CommandText =
+                $"INSERT INTO drinking_water (Date, Quantity) VALUES ('{date}', {quantity})";
+
+            try
+            {
+                command.ExecuteNonQuery();
+            }
+            catch (SqliteException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
                 connection.Close();
             }
         }
