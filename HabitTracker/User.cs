@@ -42,8 +42,9 @@ public class User
                 case "2":
                     DB.Insert();
                     break;
-                // case "3":
-                //     break;
+                case "3":
+                    DB.Delete();
+                    break;
                 // case "4":
                 //     break;
                 default:
