@@ -34,3 +34,6 @@ Developed using C# and SQLite
 - Learned how to properly organize my code using Object Oriented Programming concepts
 - I figured out when to use the static keyword for my methods vs not using it
 
+## Project Idea
+- I used the C# academy to get my project idea: [Link](https://www.thecsharpacademy.com/project/12/habit-logger)
+
